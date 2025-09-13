@@ -43,7 +43,7 @@ pub fn process_humidifi_swap(accounts: &[AccountInfo], amount_in: u64) -> Progra
     let swap_params: SwapParams = SwapParams {
         swap_id: swap_id,
         amount_in,
-        is_base_to_quote: false as u8, //currenlt only going in pool direction
+        is_base_to_quote: false as u8, // only swap in pool direction for now
         padding: [0; 7],
     };
 
