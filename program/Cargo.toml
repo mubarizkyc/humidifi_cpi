@@ -11,7 +11,6 @@ pinocchio = { git = "https://github.com/anza-xyz/pinocchio.git" }
 pinocchio-log = { git = "https://github.com/anza-xyz/pinocchio.git" }
 pinocchio-pubkey = { git = "https://github.com/anza-xyz/pinocchio.git" }
 pinocchio-system = { git = "https://github.com/anza-xyz/pinocchio.git" }
-shank = "0.4.2"
 bytemuck = { version = "1.23.0", features = ["derive"] }
 arrayref = "0.3.9"
 arrayvec = { version = "0.7", default-features = false }

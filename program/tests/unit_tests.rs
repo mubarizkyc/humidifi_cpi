@@ -1,7 +1,22 @@
 // External crates
 extern crate alloc;
 use alloc::vec;
-
+use solana_sdk::sysvar::Sysvar;
+pub const HUMIDIFI_SWAP_SELECTOR: u8 = 0x4;
+const HUMIDIFI_IX_DATA_KEY_SEED: [u8; 32] = [
+    58, 255, 47, 255, 226, 186, 235, 195, 123, 131, 245, 8, 11, 233, 132, 219, 225, 40, 79, 119,
+    169, 121, 169, 58, 197, 1, 122, 9, 216, 164, 149, 97,
+];
+pub const HUMIDIFI_IX_DATA_KEY: u64 = u64::from_le_bytes([
+    HUMIDIFI_IX_DATA_KEY_SEED[0],
+    HUMIDIFI_IX_DATA_KEY_SEED[1],
+    HUMIDIFI_IX_DATA_KEY_SEED[2],
+    HUMIDIFI_IX_DATA_KEY_SEED[3],
+    HUMIDIFI_IX_DATA_KEY_SEED[4],
+    HUMIDIFI_IX_DATA_KEY_SEED[5],
+    HUMIDIFI_IX_DATA_KEY_SEED[6],
+    HUMIDIFI_IX_DATA_KEY_SEED[7],
+]);
 // Mollusk
 use mollusk_svm::result::{Check, ProgramResult};
 use mollusk_svm::sysvar::Sysvars;
@@ -151,4 +166,57 @@ fn test_process_humidifi_swap() {
         mollusk.process_and_validate_instruction(&instruction, tx_accounts, &[Check::success()]);
 
     assert!(init_res.program_result == ProgramResult::Success);
+}
+
+fn deobfuscate(data: &mut [u8]) {
+    let mut pos_mask: u64 = 0;
+    let mut i = 0usize;
+    while i < data.len() {
+        let end = core::cmp::min(i + 8, data.len());
+        let mut tmp = [0u8; 8];
+        tmp[..end - i].copy_from_slice(&data[i..end]);
+        let mut q = u64::from_le_bytes(tmp);
+        // reverse: q ^= pos_mask; q ^= key
+        q ^= pos_mask;
+        q ^= HUMIDIFI_IX_DATA_KEY;
+        let out = q.to_le_bytes();
+        data[i..end].copy_from_slice(&out[..end - i]);
+        pos_mask = pos_mask.wrapping_add(POS_INC);
+        i += 8;
+    }
+}
+
+fn parse_swap_params(data: &[u8]) -> Option<(u64, u64, u8)> {
+    if data.len() < 17 {
+        return None;
+    }
+    let swap_id = u64::from_le_bytes(data[0..8].try_into().unwrap());
+    let amount_in = u64::from_le_bytes(data[8..16].try_into().unwrap());
+    let flag = data[16];
+    Some((swap_id, amount_in, flag))
+}
+
+pub fn get_rent_data() -> Vec<u8> {
+    let rent = Rent::default();
+    unsafe {
+        core::slice::from_raw_parts(&rent as *const Rent as *const u8, Rent::size_of()).to_vec()
+    }
+}
+
+use hex;
+#[test]
+fn test_rev_eng() {
+    println!("test start");
+    let hex_str = "3ab9c6592f2e4c92fba876e2e3baeac338ff2dffe0bae9c33d";
+    let mut buf = hex::decode(hex_str).expect("Invalid hex string");
+
+    deobfuscate(&mut buf);
+    if let Some((swap_id, amount_in, flag)) = parse_swap_params(&buf) {
+        println!(
+            "swap_id={}, amount_in={}, flag={}",
+            swap_id, amount_in, flag
+        );
+    } else {
+        println!("buffer too short or invalid after deobfuscation");
+    }
 }
