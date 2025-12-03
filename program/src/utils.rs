@@ -20,7 +20,7 @@ pub const HUMIDIFI_IX_DATA_KEY: u64 = u64::from_le_bytes([
 //BnxGGWoX1ACF85uUY5NDB5hNRHp4i9BjZJud2B41Lzcw
 //7NDEUM3qnVCbQihkpkFnRttzQRDq5KzoCdEodFCeitWj
 //EVNy5boNfAcFZq1NU8sL6h8x57Ce5NxDmF3UA7R7926T
-
+//user x
 //3aff2fffe2baebc32e84af4de3baeac338ff2dffe0bae9c33d
 //3aff2fffe2baebc33ba1fe4de3baeac338ff2dffe0bae9c33d
 //3aff2fffe2baebc3daa95feee3baeac339ff2dffe0bae9c33d
@@ -32,8 +32,14 @@ pub const HUMIDIFI_IX_DATA_KEY: u64 = u64::from_le_bytes([
 //king
 //df280b769cc7baada4a8f2bcf7baeac338ff2dffe0bae9c33d
 //cb3eb334440af28af719088af8baeac338ff2dffe0bae9c33d
+//dflow
+//cbaf1648eb26c945c99215a0e3baeac339ff2dffe0bae9c33d
+//a5658ec46385bfaa618eeffbe3baeac339ff2dffe0bae9c33d
+//723b0857305d14b1130e5ef8e3baeac338ff2dffe0bae9c33d
+//mev
+//3aff2fffe2baebc34001c13b91baeac338ff2dffe0bae9c33d
 
-pub fn spin_instruction_data(data: &mut [u8]) {
+pub fn obfuscate_instruction_data(data: &mut [u8]) {
     let mut qwords = data.chunks_exact_mut(8);
     let mut pos_mask = 0_u64;
     while let Some(qword) = qwords
