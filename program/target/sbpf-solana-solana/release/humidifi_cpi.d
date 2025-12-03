@@ -1,1 +1,0 @@
-/home/mubariz/Documents/SolDev/humidifi_cpi/program/target/sbpf-solana-solana/release/humidifi_cpi.so: /home/mubariz/Documents/SolDev/humidifi_cpi/program/src/entrypoint.rs /home/mubariz/Documents/SolDev/humidifi_cpi/program/src/lib.rs /home/mubariz/Documents/SolDev/humidifi_cpi/program/src/utils.rs
